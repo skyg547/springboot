@@ -2,15 +2,21 @@ package com.admin.study.repository;
 
 
 import com.admin.study.StudyApplication;
+import com.admin.study.model.entity.Item;
 import com.admin.study.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class UserRepositoryTest extends StudyApplication {
@@ -38,11 +44,18 @@ public class UserRepositoryTest extends StudyApplication {
 
     @Test
     public void read(){
+
+        // select * from user * where id =?
         Optional<User> user = userRepository.findById(2L);
 
 
         user.ifPresent(selectUser -> {
-            System.out.println("user : " + selectUser);
+            selectUser.getOrderDetailList().stream().forEach(detail -> {
+                Item item = detail.getItem();
+                System.out.println(detail.getItem());
+                System.out.println(item);
+            });
+            //System.out.println("user : " + selectUser);
         });
     }
 
@@ -63,7 +76,7 @@ public class UserRepositoryTest extends StudyApplication {
     }
 
     @Test
-    @Transactional
+    @Transactional // 롤백시켜주는 테스트 어노테이션
     public void delete(){
         Optional<User> user = userRepository.findById(2L);
         //Assert.assertTrue(user.isPresent()); 확인하는 테스트 코드

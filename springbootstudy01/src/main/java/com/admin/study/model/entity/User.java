@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity // == table
 @Data // 게터 세터 생성자 설정
@@ -32,5 +33,14 @@ public class User {
     private LocalDateTime updatedAt;
 
     private String updatedBy;
+
+    // 1:N 추천 ->  //LAZY = SELEct * From item where id =?
+    //EAGER = 모든 테이블 조인 1:1 추천
+    //item _ id = order_detail.item_id
+    //user_id = order_detail.user_id
+    // JOIN ite
+    //Lazy = ㅣㅈ연 로딩 , EAGER 즉시로딩
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<OrderDetail> orderDetailList;
 
 }
