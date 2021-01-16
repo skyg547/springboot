@@ -13,7 +13,7 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
-public class ItemRepositoryTest extends StudyApplication {
+public class ItemRepositoryTest   {
 
     @Autowired
     private  ItemRepository itemRepository = new ItemRepository() {
