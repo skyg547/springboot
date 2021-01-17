@@ -2,11 +2,14 @@ package com.admin.study.controller;
 
 import com.admin.study.ifs.CrudInterface;
 import com.admin.study.model.newtwork.Header;
+import com.admin.study.service.BaseService;
 import org.springframework.web.bind.annotation.*;
 
-public abstract class CrudController<Req, Res> implements CrudInterface<Req,Res> {
+import javax.swing.text.html.parser.Entity;
 
-    protected CrudInterface<Req, Res> baseService;
+public abstract class CrudController<Req, Res, Entity> implements CrudInterface<Req,Res> {
+
+    protected BaseService<Req, Res, Entity> baseService;
 
     @Override
     @PostMapping("")

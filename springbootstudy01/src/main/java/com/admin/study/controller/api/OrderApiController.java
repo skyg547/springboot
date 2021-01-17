@@ -1,6 +1,7 @@
 package com.admin.study.controller.api;
 
 import com.admin.study.controller.CrudController;
+import com.admin.study.model.entity.OrderGroup;
 import com.admin.study.model.newtwork.request.OrderGroupApiRequest;
 import com.admin.study.model.newtwork.response.OrderGroupApiResponse;
 import com.admin.study.service.OrderGroupApiLogicService;
@@ -12,15 +13,15 @@ import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/api/order")
-public class OrderApiController extends CrudController<OrderGroupApiRequest, OrderGroupApiResponse> {
+public class OrderApiController extends CrudController<OrderGroupApiRequest, OrderGroupApiResponse, OrderGroup> {
 
-    @Autowired
+    /*@Autowired
     private OrderGroupApiLogicService orderGroupApiLogicService;
 
     @PostConstruct
     public void init(){
         this.baseService = orderGroupApiLogicService;
 
-    }
+    }*/
 
 }
