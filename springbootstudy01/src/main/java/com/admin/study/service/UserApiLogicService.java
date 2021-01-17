@@ -2,6 +2,7 @@ package com.admin.study.service;
 
 import com.admin.study.ifs.CrudInterface;
 import com.admin.study.model.entity.User;
+import com.admin.study.model.enumclass.UserStatus;
 import com.admin.study.model.newtwork.Header;
 import com.admin.study.model.newtwork.request.UserApiRequest;
 import com.admin.study.model.newtwork.response.UserApiResopnse;
@@ -31,7 +32,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
         User user = User.builder()
                 .account(userApiRequest.getAccount())
                 .password(userApiRequest.getPassword())
-                .status("REGISTERED")
+                .status(UserStatus.REGISTERED)
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .email(userApiRequest.getEmail())
                 .registeredAt(LocalDateTime.now())
@@ -89,9 +90,10 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                  //3. update
                     user
                             .setAccount(userApiRequest.getAccount())
-                            .setStatus(userApiRequest.getPassword())
-                            .setPhoneNumber(userApiRequest.getStatus())
-                            .setEmail(userApiRequest.getPhoneNumber())
+                            .setPassword(userApiRequest.getPassword())
+                            .setStatus(userApiRequest.getStatus())
+                            .setPhoneNumber(userApiRequest.getPhoneNumber())
+                            .setEmail(userApiRequest.getEmail())
                             .setRegisteredAt(userApiRequest.getRegisteredAt())
                             .setUnregisteredAt(userApiRequest.getUnregisteredAt())
                             ;

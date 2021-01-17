@@ -1,5 +1,6 @@
 package com.admin.study.model.entity;
 
+import com.admin.study.model.enumclass.ItemStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -36,7 +37,8 @@ public class Item {
 
     private String content;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ItemStatus status; // 등록 / 해지 /검수
 
     private BigDecimal price;
 

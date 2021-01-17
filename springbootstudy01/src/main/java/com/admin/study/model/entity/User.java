@@ -1,5 +1,6 @@
 package com.admin.study.model.entity;
 
+import com.admin.study.model.enumclass.UserStatus;
 import jdk.vm.ci.meta.Local;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -58,7 +59,8 @@ public class User {
 
     private String password;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status; // REGISTERED/ UNREGUSTERED/ WATIING/
 
     private String email;
 

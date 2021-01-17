@@ -1,6 +1,7 @@
 package com.admin.study.model.newtwork.response;
 
 
+import com.admin.study.model.enumclass.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class UserApiResopnse {
 
     private String password;
 
-    private String status;
+    private UserStatus status;
 
     private String email;
 
