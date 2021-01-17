@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class UserRepositoryTest   {
+public class UserRepositoryTest  extends StudyApplication {
 
 
     //Dependency Injection (DI) 객체를 스프링이 관리

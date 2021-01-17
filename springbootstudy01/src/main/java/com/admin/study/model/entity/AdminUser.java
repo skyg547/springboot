@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,11 +15,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+
+@Accessors(chain = true)
 @Builder // 파라미터 순서와 상관없이 햊줌
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-
 @EntityListeners(AuditingEntityListener.class)//감지
 @Entity
 public class AdminUser {
@@ -45,7 +47,7 @@ public class AdminUser {
 
     private LocalDateTime unregisteredAt;
 
-    @CreatedDate
+    @CreatedDate // 자동 채워주기
     private LocalDateTime createdAt;
 
     @CreatedBy
