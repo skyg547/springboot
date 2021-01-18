@@ -4,10 +4,16 @@ import com.admin.study.ifs.CrudInterface;
 import com.admin.study.model.newtwork.Header;
 import com.admin.study.model.newtwork.request.UserApiRequest;
 import com.admin.study.model.newtwork.response.UserApiResopnse;
+import com.admin.study.model.newtwork.response.UserOrderInfoApiResponse;
 import com.admin.study.service.UserApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j // 로그
 @RestController
@@ -16,6 +22,19 @@ public class UserApiController implements CrudInterface<UserApiRequest, UserApiR
 
     @Autowired
     private UserApiLogicService userApiLogicService;
+
+    @GetMapping("/{id}/orderInfo")
+    public  Header<UserOrderInfoApiResponse> orderInfo(@PathVariable Long id){
+
+        return  userApiLogicService.orderInfo(id);
+    }
+
+    @GetMapping("") //페이지 만들기
+    public  Header<List<UserApiResopnse>> search(@PageableDefault(sort = "id", direction =  Sort.Direction.ASC, size = 15) Pageable pageable){
+        log.info("{}",pageable);
+        return  userApiLogicService.search(pageable);
+    }
+
 
     @Override
     @PostMapping("") // api/user

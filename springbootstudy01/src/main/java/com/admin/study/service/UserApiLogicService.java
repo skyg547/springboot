@@ -1,17 +1,27 @@
 package com.admin.study.service;
 
 import com.admin.study.ifs.CrudInterface;
+import com.admin.study.model.entity.OrderGroup;
 import com.admin.study.model.entity.User;
 import com.admin.study.model.enumclass.UserStatus;
 import com.admin.study.model.newtwork.Header;
+import com.admin.study.model.newtwork.Pagination;
 import com.admin.study.model.newtwork.request.UserApiRequest;
+import com.admin.study.model.newtwork.response.ItemApiResponse;
+import com.admin.study.model.newtwork.response.OrderGroupApiResponse;
 import com.admin.study.model.newtwork.response.UserApiResopnse;
+import com.admin.study.model.newtwork.response.UserOrderInfoApiResponse;
 import com.admin.study.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static com.admin.study.model.newtwork.Header.Ok;
 
@@ -20,6 +30,12 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private OrderGroupApiLogicService orderGroupApiLogicService;
+
+    @Autowired
+    private  ItemApiLogicService itemApiLogicService;
 
 
     @Override
@@ -43,7 +59,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 
 
 
-        return response(newUser);
+        return Header.Ok(response(newUser));
     }
 
     @Override
@@ -70,6 +86,8 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
         // 람다로 깔끔하게 정리 방법 2.
         return  userRepository.findById(id)
                 .map(user -> response(user))
+              //  .map(userApiResopnse -> Header.Ok(userApiResopnse))
+                .map(Header::Ok)
                 .orElseGet(
                         ()-> Header.ERROR("데이터 없음")
                 );
@@ -105,6 +123,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                  })
                 .map(user -> userRepository.save(user)) // update 데이터 베이스 반영 _> newUser 반환
                 .map(updateuser -> response(updateuser))            // user api response 만들기
+                .map(Header::Ok)
                 .orElseGet(()->Header.ERROR("데이터 없음"));
 
 
@@ -129,7 +148,26 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 ;
     }
 
-    private Header<UserApiResopnse> response(User user){
+//    private Header<UserApiResopnse> response(User user){
+//        //user -> userapiResopnse 만들기
+//        UserApiResopnse userApiResopnse = UserApiResopnse.builder()
+//                .id(user.getId())
+//                .account(user.getAccount())
+//                .password(user.getPassword()) // todo 암호화 길이
+//                .email(user.getEmail())
+//                .phoneNumber(user.getPhoneNumber())
+//                .status(user.getStatus())
+//                .registeredAt(user.getRegisteredAt())
+//                .unregisteredAt(user.getUnregisteredAt())
+//                .build();
+//
+//        //Header + data return
+//        return Header.Ok(userApiResopnse);
+//
+//    }
+
+    //페이지용 리스폰
+    private UserApiResopnse response(User user){
         //user -> userapiResopnse 만들기
         UserApiResopnse userApiResopnse = UserApiResopnse.builder()
                 .id(user.getId())
@@ -143,7 +181,62 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .build();
 
         //Header + data return
-        return Header.Ok(userApiResopnse);
+        return userApiResopnse;
 
+    }
+    //페이저블 만들기
+    public Header<List<UserApiResopnse>> search(Pageable pageable) {
+
+        Page<User> users = userRepository.findAll(pageable);
+
+        List<UserApiResopnse> userApiResopnseList = users.stream()
+              .map(user -> response(user))
+              .collect(Collectors.toList());
+
+        // List<UserApiResponse>현재
+        // Header<List<UserA[oResponse>>반환해야하는값
+
+        //총페이지 정보 넘겨주기 페이지 만들기
+        Pagination pagination = Pagination.builder()
+                .totalPages(users.getTotalPages())
+                .totalElements(users.getTotalElements())
+                .currentPage(users.getTotalPages())
+                .currentElements(users.getNumberOfElements())
+                .build();
+
+
+        return Header.Ok(userApiResopnseList, pagination);
+
+    }
+
+    public Header<UserOrderInfoApiResponse> orderInfo(Long id) {
+
+        //user
+        User user = userRepository.getOne(id);
+        UserApiResopnse userApiResopnse = response(user);
+
+        //orderGroup 유저에 묶어 버리기
+        List<OrderGroup> orderGroupList = user.getOrderGroupList();
+        List<OrderGroupApiResponse> orderGroupApiResponseList = orderGroupList.stream()
+                .map(orderGroup -> {
+
+                   OrderGroupApiResponse orderGroupApiResponse = orderGroupApiLogicService.response(orderGroup).getData();
+
+                   //item api response 오더 그룹에 묶어버리기
+                    List<ItemApiResponse> itemApiResponseList = orderGroup.getOrderDetailList().stream()
+                            .map(detail -> detail.getItem())
+                            .map(item -> itemApiLogicService.response(item).getData())
+                            .collect(Collectors.toList());
+                    orderGroupApiResponse.setItemApiResponseList(itemApiResponseList);
+                    return orderGroupApiResponse;
+                })
+                .collect(Collectors.toList());
+
+        userApiResopnse.setOrderGroupApiResponsesList(orderGroupApiResponseList);
+        UserOrderInfoApiResponse userOrderInfoApiResponse = UserOrderInfoApiResponse.builder().
+                userApiResopnse(userApiResopnse)
+                .build();
+
+        return Header.Ok(userOrderInfoApiResponse);
     }
 }
